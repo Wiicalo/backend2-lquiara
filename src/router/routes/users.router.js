@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { User } from "../config/models/user.model.js";
 import { createHash } from "../utils/bcrypt.js";
+import { userRepository } from "../../services/repositories/user.repository.js";
 
 const usersRouter = Router();
 
@@ -16,7 +16,7 @@ const toSafeUser = (user) => ({
 
 usersRouter.get("/", async (req, res) => {
     try {
-        const users = await User.find().lean();
+        const users = await userRepository.list();
         res.send({ status: "success", users: users.map(toSafeUser) });
     } catch (error) {
         res.status(500).send({ status: "error", error: "Error al obtener usuarios" });
@@ -25,7 +25,7 @@ usersRouter.get("/", async (req, res) => {
 
 usersRouter.get("/:uid", async (req, res) => {
     try {
-        const user = await User.findById(req.params.uid);
+        const user = await userRepository.getById(req.params.uid);
         if (!user) {
             return res.status(404).send({ status: "error", error: "Usuario no encontrado" });
         }
@@ -41,7 +41,7 @@ usersRouter.post("/", async (req, res) => {
         if (!first_name || !last_name || !email || !age || !password) {
             return res.status(400).send({ status: "error", error: "Faltan campos obligatorios" });
         }
-        const newUser = await User.create({
+        const newUser = await userRepository.create({
             first_name,
             last_name,
             email,
@@ -62,7 +62,7 @@ usersRouter.put("/:uid", async (req, res) => {
         if (updates.password) {
             updates.password = createHash(updates.password);
         }
-        const updated = await User.findByIdAndUpdate(req.params.uid, updates, { new: true });
+        const updated = await userRepository.update(req.params.uid, updates);
         if (!updated) {
             return res.status(404).send({ status: "error", error: "Usuario no encontrado" });
         }
@@ -74,7 +74,7 @@ usersRouter.put("/:uid", async (req, res) => {
 
 usersRouter.delete("/:uid", async (req, res) => {
     try {
-        const deleted = await User.findByIdAndDelete(req.params.uid);
+        const deleted = await userRepository.remove(req.params.uid);
         if (!deleted) {
             return res.status(404).send({ status: "error", error: "Usuario no encontrado" });
         }

@@ -4,11 +4,9 @@ import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import cookieParser from 'cookie-parser';
 import { environment } from '../config/env.config.js';
+import { connectDB } from '../config/db.config.js';
 import initializePassport from '../config/auth/passport.config.js';
-import authRouter from '../routes/auth.router.js'; 
-import homeRouter from '../routes/home.router.js'; 
-import studentRouter from '../routes/student.router.js'; 
-import usersRouter from '../routes/users.router.js';
+import appRouter from '../router/router.js';
 
 const app = express();
 const PORT = environment.PORT || 8080;
@@ -35,17 +33,15 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-app.use('/api/sessions', authRouter); 
-app.use('/api/users', usersRouter);
-app.use('/', homeRouter); 
-app.use('/students', studentRouter); 
+app.use("/", appRouter);
 
 
 app.use((req, res) => {
     res.status(404).send({ status: "error", message: "Ruta no encontrada" });
 });
 
-const startServer = () => {
+const startServer = async () => {
+    await connectDB();
     app.listen(PORT, () => {
         console.log(`Servidor escuchando en http://localhost:${PORT}` );
     });

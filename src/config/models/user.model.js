@@ -24,6 +24,16 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true // Se encriptará antes de guardar
     },
+    passwordChangedAt: {
+        type: Date,
+        default: Date.now
+    },
+    resetPasswordToken: {
+        type: String
+    },
+    resetPasswordExpires: {
+        type: Date
+    },
     cart: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'carts' // Asegúrate de que 'carts' sea el nombre de tu colección de carritos
