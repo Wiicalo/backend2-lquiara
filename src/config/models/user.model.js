@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true // Se encriptará antes de guardar
+        required: true 
     },
     passwordChangedAt: {
         type: Date,
@@ -36,11 +36,11 @@ const userSchema = new mongoose.Schema({
     },
     cart: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'carts' // Asegúrate de que 'carts' sea el nombre de tu colección de carritos
+        ref: 'carts' 
     },
     role: {
         type: String,
-        enum: ["user", "seller", "admin"], // Roles permitidos
+        enum: ["user", "seller", "admin"], 
         default: "user"
     }
 }, { timestamps: true });
